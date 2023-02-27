@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th = "https://www.thymeleaf.org">
+
+<head th:replace="fragments :: header">
+
+</head>
+
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <ul th:replace="fragments :: sidebar"></ul>
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Topbar -->
+                <nav th:replace="fragments :: topbar"></nav>
+                <!-- End of Topbar -->
+
+                    <div class="container-fluid">
+                        <div>
+                            <form th:action="@{/search-result/0}" method="get">
+                                <label for="search">Search</label>
+                                <input id="search" type="text" name="keyword" placeholder="Search products"/>
+                                <button type="submit" class="btn btn-primary">Search</button>
+                            </form>
+                        </div>
+    <!--                Start table-->
+                        <div th:if="${size == 0}">
+                            <p>No products</p>
+                        </div>
+                        <div th:if="${success}" class="text-center alert alert-success">
+                            <p th:text="${success}"></p>
+                        </div>
+                        <div th:if="${failed}" class="text-center alert alert-danger">
+                            <p th:text="${failed}"></p>
+                        </div>
+                        <a class="btn btn-primary" th:href="@{/add-product}">Add new product</a>
+                    <table class="table table-striped" th:if="${size > 0}">
+                        <thead>
+                        <tr>
+                            <th scope="col">Name product</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Image</th>
+                            <th scope="col">Update</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="product : ${products}">
+                            <th scope="row" th:text="${product.name}"></th>
+                            <td th:text="${product.category.name}"></td>
+                            <td th:text="${product.costPrice}"></td>
+                            <td th:text="${product.currentQuantity}"></td>
+                            <td><img src="" style="height: 40px; width: 40px;" th:src="*{'data:image/jpeg;base64,' + {product.image}}"> </td>
+                            <td><a th:href="@{/update-product/{id} (id = ${product.id})}" class="btn btn-primary">Update</a></td>
+                            <td>
+                                <a class="btn btn-primary" th:if="${product.activated == false}"
+                                   th:href="@{/enable-product/{id} (id = ${product.id})}">Enable</a>
+
+                                <a class="btn btn-danger" th:if="${product.deleted == false}"
+                                   th:href="@{/delete-product/{id} (id = ${product.id})}">Delete</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+    <!--                End table-->
+
+                        <nav aria-label="Page navigation example">
+<!--                            startPage = 0-->
+                            <ul class="pagination">
+                                <li th:if="${currentPage != 0}" class="page-item">
+                                    <a th:href="@{'/products/' + ${currentPage - 1}}" class="page-link" href="#">Previous</a>
+                                </li>
+
+                                <li th:each="i : ${#numbers.sequence(1, totalPages)}" th:classappend="${currentPage == i - 1 ? 'active' : ''}"
+                                    class="page-item">
+                                    <a th:href="@{'/products/'+ ${i - 1}}" class="page-link" href="#"><span th:text="${i}"></span></a>
+                                </li>
+
+                                <li th:if="${currentPage + 1 != totalPages}" class="page-item">
+                                    <a th:href="@{'/products/' + ${currentPage + 1}}" class="page-link" href="#">Next</a>
+                                </li>
+                            </ul>
+                        </nav>
+
+                </div>
+            </div>
+            <!-- Footer -->
+            <footer th:replace="fragments :: footer"></footer>
+            <!-- End of Footer -->
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a th:replace="fragments :: scroll"></a>
+
+<!--    &lt;!&ndash; Logout Modal&ndash;&gt;-->
+<!--    <div th:replace="fragments :: logoutmodal"></div>-->
+<!--Add modal-->
+
+<!--    Change name category-->
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalExample" aria-hidden="true">
+        <form th:action="@{/update-category}" method="put">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit category</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="idEdit" class="col-form-label">Name:</label>
+                            <input type="text" class="form-control" id="idEdit" name="id" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nameEdit" class="col-form-label">Name:</label>
+                            <input type="text" class="form-control" id="nameEdit" name="name">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <th:block th:replace="/fragments :: script"></th:block>
+    <script th:src="@{/js/categories.js}"></script>
+</body>
+</html>
